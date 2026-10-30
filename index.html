@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLBB Diamond Order</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #121212; 
+            color: #fff; 
+            padding: 20px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .form-container { 
+            width: 100%;
+            max-width: 400px; 
+            background: #1e1e1e; 
+            padding: 25px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        h2 { text-align: center; margin-bottom: 20px; color: #00aced; }
+        label { font-size: 14px; color: #bbb; }
+        input, select { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 8px 0 16px 0; 
+            background: #2d2d2d; 
+            border: 1px solid #444; 
+            color: #fff; 
+            border-radius: 6px; 
+            box-sizing: border-box;
+        }
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background: #0088cc; 
+            color: #fff; 
+            border: none; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 16px;
+        }
+        button:hover { background: #006699; }
+        #statusMsg { text-align: center; margin-top: 15px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2>💎 MLBB Diamond ဝယ်ယူရန်</h2>
+        <form id="orderForm">
+            <label>User ID:</label>
+            <input type="text" id="userId" placeholder="ဥပမာ - 12345678" required>
+
+            <label>Zone ID:</label>
+            <input type="text" id="zoneId" placeholder="ဥပမာ - 1234" required>
+
+            <label>Diamond ပက်ကေ့ဂျ် ရွေးပါ:</label>
+            <select id="package">
+                <option value="86 Diamonds - 5,500 Ks">86 Diamonds - 5,500 Ks</option>
+                <option value="172 Diamonds - 11,000 Ks">172 Diamonds - 11,000 Ks</option>
+                <option value="257 Diamonds - 16,500 Ks">257 Diamonds - 16,500 Ks</option>
+                <option value="514 Diamonds - 33,000 Ks">514 Diamonds - 33,000 Ks</option>
+            </select>
+
+            <button type="submit" id="submitBtn">Order တင်မည်</button>
+        </form>
+        <p id="statusMsg"></p>
+    </div>
+
+    <script>
+        // ထည့်သွင်းပြီးသား Bot Token
+        const BOT_TOKEN = "9100261124:AAEGFhY548xyDUy8-owf5OgD8-KYEzv6L_o"; 
+        
+        // ⚠️ အောက်ပါနေရာတွင် သင့်ရဲ့ Telegram Chat ID (သို့) Admin Group ID ကို ထည့်ပေးပါ
+        const CHAT_ID = "YOUR_CHAT_ID_यहाँထည့်ပါ";       
+
+        document.getElementById('orderForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const userId = document.getElementById('userId').value;
+            const zoneId = document.getElementById('zoneId').value;
+            const pkg = document.getElementById('package').value;
+            const statusMsg = document.getElementById('statusMsg');
+            
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = "Order တင်နေပါသည်...";
+
+            // Telegram သို့ ပို့မည့် မက်ဆေ့ဂျ် ပုံစံ
+            const message = `🚨 *Order အသစ်ဝင်ရောက်လာပါသည်!*\n\n` +
+                            `👤 User ID: \`${userId}\`\n` +
+                            `🌍 Zone ID: \`${zoneId}\`\n` +
+                            `💎 Package: ${pkg}\n` +
+                            `⏳ အခြေအနေ: စစ်ဆေးဆဲ (Pending)`;
+
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+
+                const data = await response.json();
+                if (data.ok) {
+                    statusMsg.style.color = "#00ff00";
+                    statusMsg.innerText = "Order တင်ခြင်း အောင်မြင်ပါသည်။ ကျေးဇူးတင်ပါသည်။";
+                    document.getElementById('orderForm').reset();
+                } else {
+                    statusMsg.style.color = "#ff4444";
+                    statusMsg.innerText = "အမှားအယွင်း ရှိနေပါသည် (Chat ID မှန်ရဲ့လား စစ်ပါ)။";
+                }
+            } catch (error) {
+                statusMsg.style.color = "#ff4444";
+                statusMsg.innerText = "ချိတ်ဆက်မှု အဆင်မပြေပါ။";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Order တင်မည်";
+            }
+        });
+    </script>
+
+</body>
+</html>
